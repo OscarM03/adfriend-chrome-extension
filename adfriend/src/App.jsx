@@ -89,9 +89,9 @@ function App() {
     return (
         <section>
             <header className="py-2 mx-8">
-                <h1 className="text-2xl font-bold">Adfriend</h1>
+                <h1 className="text-2xl font-bold">AdFriend</h1>
             </header>
-            <div className="h-screen flex justify-center items-center mx-8 ">
+            <div className="h-screen flex justify-center items-center mx-8 pt-10">
                 <div>
                     <h2 className="text-2xl font-bold">Choose the option you want to replace Ads</h2>
                     {options.map((option) => (
