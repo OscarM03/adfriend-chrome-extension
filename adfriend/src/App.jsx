@@ -6,6 +6,8 @@ function App() {
     const [savedQuotes, setSavedQuotes] = useState([]);
     const [savedReminders, setSavedReminders] = useState([]);
     const [editingIndex, setEditingIndex] = useState(null);
+    const [bgColor, setBgColor] = useState("#000000");
+    const [textColor, setTextColor] = useState("#ffffff");
 
     const options = [
         { label: "Motivational Quote", value: "motivational", description: "Get a motivational quote to help you move on with your day." },
@@ -16,10 +18,12 @@ function App() {
     ];
 
     useEffect(() => {
-        chrome.storage.sync.get(["selectedOption", "savedQuotes", "savedReminders"], (result) => {
+        chrome.storage.sync.get(["selectedOption", "savedQuotes", "savedReminders", "bgColor", "textColor"], (result) => {
             if (result.selectedOption) setSelectedOption(result.selectedOption);
             if (result.savedQuotes) setSavedQuotes(result.savedQuotes);
             if (result.savedReminders) setSavedReminders(result.savedReminders);
+            if (result.bgColor) setBgColor(result.bgColor);
+            if (result.textColor) setTextColor(result.textColor);
         });
     }, []);
 
@@ -86,6 +90,20 @@ function App() {
         setEditingIndex(index);
     }
 
+    const handleColorChange = (type, color) => {
+        if (type === "bg") {
+            setBgColor(color);
+            chrome.storage.sync.set({
+                bgColor: color
+            });
+        } else {
+            setTextColor(color);
+            chrome.storage.sync.set({
+                textColor: color
+            });
+        }
+    }
+
     return (
         <section>
             <header className="py-2 mx-8">
@@ -93,7 +111,23 @@ function App() {
             </header>
             <div className="h-screen flex justify-center items-center mx-8 pt-10">
                 <div>
-                    <h2 className="text-2xl font-bold">Choose the option you want to replace Ads</h2>
+                    <h2 className="text-2xl font-bold">Choose the option you want to replace Ads and Colors</h2>
+                    <div className="mt-4">
+                        <label className="font-bold text-lg">Select Background Color</label>
+                        <input type="color" 
+                        value={bgColor}
+                        onChange={(e) => handleColorChange("bg", e.target.value)}
+                        className="ml-2"
+                        />
+                    </div>
+                    <div className="mt-4">
+                        <label className="font-bold text-lg">Select Text Color</label>
+                        <input type="color" 
+                        value={textColor}
+                        onChange={(e) => handleColorChange("text", e.target.value)}
+                        className="ml-2"
+                        />
+                    </div>
                     {options.map((option) => (
                         <div key={option.value} className="border-2 rounded-md py-1 px-2 mt-6">
                             <input
