@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import CustomizationPanel from "./components/CustomizationPanel";
+import RemindersQuotesForm from "./components/RemindersQuotesForm";
 
-function App() {
+const App = () => {
     const [selectedOption, setSelectedOption] = useState("");
     const [customInput, setCustomInput] = useState("");
     const [savedQuotes, setSavedQuotes] = useState([]);
     const [savedReminders, setSavedReminders] = useState([]);
     const [editingIndex, setEditingIndex] = useState(null);
+    const [customizeOption, setCustomizeOption] = useState("colors");
     const [bgColor, setBgColor] = useState("#000000");
     const [textColor, setTextColor] = useState("#ffffff");
 
@@ -19,7 +22,10 @@ function App() {
 
     useEffect(() => {
         chrome.storage.sync.get(["selectedOption", "savedQuotes", "savedReminders", "bgColor", "textColor"], (result) => {
-            if (result.selectedOption) setSelectedOption(result.selectedOption);
+            if (result.selectedOption) {
+                setSelectedOption(result.selectedOption.option);
+                setCustomizeOption(result.selectedOption.customize);
+            }
             if (result.savedQuotes) setSavedQuotes(result.savedQuotes);
             if (result.savedReminders) setSavedReminders(result.savedReminders);
             if (result.bgColor) setBgColor(result.bgColor);
@@ -34,7 +40,10 @@ function App() {
         setCustomInput("");
 
         chrome.storage.sync.set({
-            selectedOption: value
+            selectedOption: {
+                option: value,
+                customize: customizeOption
+            }
         });
     };
 
@@ -104,30 +113,28 @@ function App() {
         }
     }
 
+    const handleCustomizeChange = (value) => {
+        setCustomizeOption(value);
+        chrome.storage.sync.get(["selectedOption"], (result) => {
+            if (result.selectedOption) {
+                chrome.storage.sync.set({
+                    selectedOption: {
+                        ...result.selectedOption,
+                        customize: value
+                    }
+                })
+            }
+        })
+    }
+
     return (
         <section>
             <header className="py-2 mx-8">
                 <h1 className="text-2xl font-bold">AdFriend</h1>
             </header>
-            <div className="h-screen flex justify-center items-center mx-8 pt-10">
+            <div className="h-auto flex justify-center items-center mx-8 py-10">
                 <div>
                     <h2 className="text-2xl font-bold">Choose the option you want to replace Ads and Colors</h2>
-                    <div className="mt-4">
-                        <label className="font-bold text-lg">Select Background Color</label>
-                        <input type="color" 
-                        value={bgColor}
-                        onChange={(e) => handleColorChange("bg", e.target.value)}
-                        className="ml-2"
-                        />
-                    </div>
-                    <div className="mt-4">
-                        <label className="font-bold text-lg">Select Text Color</label>
-                        <input type="color" 
-                        value={textColor}
-                        onChange={(e) => handleColorChange("text", e.target.value)}
-                        className="ml-2"
-                        />
-                    </div>
                     {options.map((option) => (
                         <div key={option.value} className="border-2 rounded-md py-1 px-2 mt-6">
                             <input
@@ -139,49 +146,19 @@ function App() {
                             <label className="ml-2 font-bold text-xl">{option.label}</label>
                             <p className="text-sm text-gray-500 font-bold">{option.description}</p>
 
+                            {(selectedOption !== null) && selectedOption === option.value ? (
+                                <CustomizationPanel customizeOption={customizeOption} handleCustomizeChange={handleCustomizeChange} bgColor={bgColor} textColor={textColor} handleColorChange={handleColorChange} />
+                            ) : null}
+
                             {(selectedOption === "reminders" && option.value === "reminders") ||
                                 (selectedOption === "quotes" && option.value === "quotes") ? (
-                                <div>
-                                    <input
-                                        type="text"
-                                        value={customInput}
-                                        onChange={(e) => setCustomInput(e.target.value)}
-                                        placeholder={option.value === "reminders" ? "Enter your reminder" : "Enter your quote"}
-                                        className="border-2 rounded-md px-2 py-1 w-full mt-2"
-                                    />
-                                    <button className="mt-2 border px-4 py-1 rounded-md bg-black text-white font-bold"
-                                        onClick={handleSaveInputs}
-                                    >
-                                        {editingIndex !== null ? "Update" : "Save"}
-                                    </button>
-
-                                    <ul className="">
-                                        {(selectedOption === "quotes" ? savedQuotes : savedReminders).map((input, index) => (
-                                            <li key={index} className="rounded-md py-1 px-2 mt-1 flex justify-between items-center group ">
-                                                <span className="text-gray-500 font-medium">{input}</span>
-                                                <div className="hidden group-hover:flex">
-                                                    <button className="border px-2 py-1 rounded-md bg-blue-500 text-white font-bold"
-                                                        onClick={() => handleEdit(index)}
-                                                    >
-                                                        Edit
-                                                    </button>
-                                                    <button className="border px-2 py-1 rounded-md bg-red-500 text-white font-bold ml-2"
-                                                        onClick={() => handleDelete(index)}
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
+                                <RemindersQuotesForm selectedOption={selectedOption} customInput={customInput} setCustomInput={setCustomInput} savedItems={selectedOption === "quotes" ? savedQuotes : savedReminders} handleSave={handleSaveInputs} handleEdit={handleEdit} handleDelete={handleDelete} />
                             ) : null}
                         </div>
-
                     ))}
                 </div>
             </div>
-        </section>
+        </section >
     );
 }
 
