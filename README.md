@@ -26,7 +26,7 @@ AdFriend is a Chrome extension that replaces ads with **positive and uplifting c
 4. **Load the extension in Chrome**:
    - Open **Chrome** and go to `chrome://extensions/`.
    - Enable **Developer mode** (toggle in the top-right corner).
-   - Click **Load unpacked** and select the **build** folder inside the project directory.
+   - Click **Load unpacked** and select the **dist** folder inside the project directory.
 
 ## ⚙️ Usage
 1. **Select Content Type**: Choose between **Bible verses, Quran verses, or motivational quotes**.
