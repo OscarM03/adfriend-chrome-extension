@@ -3,14 +3,13 @@ import PropTypes from "prop-types";
 const CustomizationPanel = ({ customizeOption, handleCustomizeChange, bgColor, textColor, handleColorChange }) => {
     return (
         <div className="mt-4 flex gap-4">
-            <div className="border-2 rounded-md py-1 px-2 mt-4 border-gray-500">
+            <div className="border-2 rounded-md py-1 px-2 mt-4 border-gray-500 w-full">
                 <input
-                    type="radio"
                     name="customize"
                     checked={customizeOption === "colors"}
                     onChange={() => handleCustomizeChange("colors")}
                 />
-                <label className="ml-2 font-bold text-lg">Background and text color</label>
+                <label className="ml-2 font-bold text-lg text-center">Background and text color</label>
                 <div className="flex items-center justify-center gap-4">
                     <div className="mt-4">
                         <label className="font-bold text-sm">Background Color</label>
@@ -22,11 +21,11 @@ const CustomizationPanel = ({ customizeOption, handleCustomizeChange, bgColor, t
                     </div>
                 </div>
             </div>
-            <div className="border-2 rounded-md py-1 px-2 mt-4 border-gray-500">
+            {/* <div className="border-2 rounded-md py-1 px-2 mt-4 border-gray-500">
                 <input type="radio" name="customize" checked={customizeOption === "images"} onChange={() => handleCustomizeChange("images")} />
                 <label className="ml-2 font-bold text-lg">Random Images</label>
                 <p className="text-sm text-gray-500 font-bold">Choose random images as the background</p>
-            </div>
+            </div> */}
         </div>
     );
 };
