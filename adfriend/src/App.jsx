@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import CustomizationPanel from "./components/CustomizationPanel";
 import RemindersContainer from "./components/RemindersContainer";
-import QuotesContainer from "./components/QuotesContainer";
+// import QuotesContainer from "./components/QuotesContainer";
 
 const App = () => {
-    const [selectedOption, setSelectedOption] = useState([]);
+    const [selectedOption, setSelectedOption] = useState();
     const [customizeOption, setCustomizeOption] = useState("colors");
     const [bgColor, setBgColor] = useState("#000000");
     const [textColor, setTextColor] = useState("#ffffff");
@@ -17,8 +17,8 @@ const App = () => {
 
     useEffect(() => {
         chrome.storage.sync.get(["selectedOption", "savedQuotes", "bgColor", "textColor"], (result) => {
-            if (result.selectedOption?.options) {
-                setSelectedOption(result.selectedOption.options);
+            if (result.selectedOption?.option) {
+                setSelectedOption(result.selectedOption.option);
             }
             if (result.selectedOption?.customize) {
                 setCustomizeOption(result.selectedOption.customize);
@@ -31,27 +31,28 @@ const App = () => {
 
 
     const handleOptionChange = (value) => {
-        setSelectedOption((prev) => {
-            let updatedOptions;
+        // setSelectedOption((prev) => {
+        //     let updatedOptions;
 
-            if (prev.includes(value)) {
-                updatedOptions = prev.filter((option) => option !== value);
-            } else if (prev.length < 2) {
-                updatedOptions = [...prev, value];
-            } else {
-                return prev;
-            }
+        //     if (prev.includes(value)) {
+        //         updatedOptions = prev.filter((option) => option !== value);
+        //     } else if (prev.length < 2) {
+        //         updatedOptions = [...prev, value];
+        //     } else {
+        //         return prev;
+        //     }
             // }
+            setSelectedOption(value);
 
             chrome.storage.sync.set({
                 selectedOption: {
-                    options: updatedOptions,
+                    option: value,
                     customize: customizeOption
                 }
             });
 
-            return updatedOptions;
-        });
+        //     return updatedOptions;
+        // });
     };
 
 
@@ -73,7 +74,7 @@ const App = () => {
         setCustomizeOption(value);
         chrome.storage.sync.set({
             selectedOption: {
-                options: selectedOption,
+                option: selectedOption,
                 customize: value
             }
         });
@@ -92,23 +93,20 @@ const App = () => {
                     {options.map((option) => (
                         <div key={option.value} className="border-2 rounded-md py-1 px-2 mt-6">
                             <input
-                                type="checkbox"
-                                checked={selectedOption.includes(option.value)}
+                                type="radio"
+                                checked={selectedOption === option.value}
                                 onChange={() => handleOptionChange(option.value)}
                             />
                             <label className="ml-2 font-bold text-xl">{option.label}</label>
                             <p className="text-sm text-gray-500 font-bold">{option.description}</p>
                         </div>
                     ))}
-                    <QuotesContainer
+                    {/* <QuotesContainer
                         selectedOption={selectedOption}
                         handleOptionChange={handleOptionChange}
-                    />
+                    /> */}
 
-                    <RemindersContainer
-                        selectedOption={selectedOption}
-                        handleOptionChange={handleOptionChange}
-                    />
+                    <RemindersContainer />
                 </div>
             </div >
         </section >

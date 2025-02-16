@@ -5,12 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build": "vite build"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.3",
+    "appwrite": "^17.0.0",
     "css": "^3.0.0",
     "node": "^23.7.0",
     "react": "^18.3.1",
